@@ -2,11 +2,13 @@ name: Build
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
@@ -22,7 +24,7 @@ jobs:
           - "-XX:MaxHeapSize=512m"
           - "-XX:+UnlockExperimentalVMOptions"
           - "-XX:ConcGCThreads=2"
-    fail-fast: false
+
     name: "Test JDK ${{ matrix.java }}, OS: ${{ matrix.os }}, Flag: ${{ matrix.jvm_flag }}"
     steps:
       - name: Checkout
@@ -34,10 +36,10 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'zulu'
           cache: 'maven'
+
       - name: Log JVM Flag
         run: |
           echo "Running with JVM flag: ${{ matrix.jvm_flag }}"
-      
 
       - name: Maven Compile
         env:
